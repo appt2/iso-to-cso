@@ -4,13 +4,12 @@ Hello, this program is capable of compressing 2 game formats, psp iso and cso, i
 
 ## Images 
 
-<div align="center">
-
-
-<img src = "../img/games-added.jpg">
-<img src = "../img/games-added.jpg">
-<img src = "../img/games-added.jpg">
+<div align = "center">
+	<img style="width: 25%; height: 80%; margin-bottom :2px; border-radius :9px; " src="https://raw.githubusercontent.com/appt2/iso-to-cso/main/img/games-added.jpg">
+    <img style="width: 25%; height: 80%; margin-bottom :2px; border-radius :9px;  " src="https://raw.githubusercontent.com/appt2/iso-to-cso/main/img/games-converting.jpg">
+    <img style="width: 25%; height: 80%; margin-bottom :2px; border-radius :9px; " src="https://raw.githubusercontent.com/appt2/iso-to-cso/main/img/mainscreen.jpg">
 </div>
+
 
 
 
