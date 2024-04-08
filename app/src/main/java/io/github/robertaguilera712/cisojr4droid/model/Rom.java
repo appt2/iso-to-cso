@@ -13,160 +13,167 @@ import java.io.IOException;
 
 public class Rom {
 
-    private static ContentResolver resolver;
-    private static DocumentFile romsFolder;
-    private static String outputMimeType;
-    private static String outputFileExtension;
-    private static String inputMimeType;
-    private static String inputFileExtension;
+  private static ContentResolver resolver;
+  private static DocumentFile romsFolder;
+  private static String outputMimeType;
+  private static String outputFileExtension;
+  private static String inputMimeType;
+  private static String inputFileExtension;
 
-    private final Uri inputUri;
-    private final String inputFilename;
-    private Uri outputUri;
-    private String outputFilename;
-    private int CompressionLevel;
-    private boolean delete;
-    private String status;
-    private double progress;
-    private ParcelFileDescriptor pfdIn;
-    private ParcelFileDescriptor pfdOut;
-    private FileInputStream in;
-    private FileOutputStream out;
+  private final Uri inputUri;
+  private final String inputFilename;
+  private Uri outputUri;
+  private String outputFilename;
+  private int CompressionLevel;
+  private boolean delete;
+  private String status;
+  private double progress;
+  private ParcelFileDescriptor pfdIn;
+  private ParcelFileDescriptor pfdOut;
+  private FileInputStream in;
+  private FileOutputStream out;
 
-    public Rom(Uri inputUri, String inputFilename, String outputFilename, int compressionLevel, boolean delete, String status, double progress) {
-        this.inputUri = inputUri;
-        this.inputFilename = inputFilename;
-        this.outputFilename = outputFilename;
-        CompressionLevel = compressionLevel;
-        this.delete = delete;
-        this.status = status;
-        this.progress = progress;
+  public Rom(
+      Uri inputUri,
+      String inputFilename,
+      String outputFilename,
+      int compressionLevel,
+      boolean delete,
+      String status,
+      double progress) {
+    this.inputUri = inputUri;
+    this.inputFilename = inputFilename;
+    this.outputFilename = outputFilename;
+    CompressionLevel = compressionLevel;
+    this.delete = delete;
+    this.status = status;
+    this.progress = progress;
+  }
+
+  public void initStreams() throws FileNotFoundException {
+    setOutputUri();
+    pfdIn = Rom.resolver.openFileDescriptor(inputUri, "r");
+    pfdOut = Rom.resolver.openFileDescriptor(outputUri, "rw");
+    in = new FileInputStream(pfdIn.getFileDescriptor());
+    out = new FileOutputStream(pfdOut.getFileDescriptor());
+  }
+
+  private void setOutputUri() {
+    DocumentFile outputFile = romsFolder.findFile(outputFilename);
+    if (outputFile != null) {
+      outputFile.delete();
     }
+    outputUri = romsFolder.createFile(outputMimeType, outputFilename).getUri();
+  }
 
-    public void initStreams() throws FileNotFoundException {
-        setOutputUri();
-        pfdIn = Rom.resolver.openFileDescriptor(inputUri, "r");
-        pfdOut = Rom.resolver.openFileDescriptor(outputUri, "rw");
-        in = new FileInputStream(pfdIn.getFileDescriptor());
-        out = new FileOutputStream(pfdOut.getFileDescriptor());
+  public void closeStreams() {
+    try {
+      pfdIn.close();
+      pfdOut.close();
+      in.close();
+      out.close();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+  }
 
-    private void setOutputUri() {
-        DocumentFile outputFile = romsFolder.findFile(outputFilename);
-        if (outputFile != null) {
-            outputFile.delete();
-        }
-        outputUri = romsFolder.createFile(outputMimeType, outputFilename).getUri();
-    }
+  public String getInputFilename() {
+    return inputFilename;
+  }
 
-    public void closeStreams() {
-        try {
-            pfdIn.close();
-            pfdOut.close();
-            in.close();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+  public String getOutputFilename() {
+    return outputFilename;
+  }
 
-    public String getInputFilename() {
-        return inputFilename;
-    }
+  public String getOutputBaseFilename() {
+    return outputFilename.replaceFirst(Rom.outputFileExtension + "$", "");
+  }
 
-    public String getOutputFilename() {
-        return outputFilename;
-    }
+  public FileInputStream getIn() {
+    return in;
+  }
 
-    public String getOutputBaseFilename() {
-        return outputFilename.replaceFirst(Rom.outputFileExtension + "$", "");
-    }
+  public FileOutputStream getOut() {
+    return out;
+  }
 
-    public FileInputStream getIn() {
-        return in;
-    }
+  public Uri getInputUri() {
+    return inputUri;
+  }
 
-    public FileOutputStream getOut() {
-        return out;
-    }
+  public void setOutputFilename(String outputFilename) {
+    this.outputFilename = outputFilename;
+  }
 
-    public Uri getInputUri() {
-        return inputUri;
-    }
+  public static void setResolver(ContentResolver resolver) {
+    Rom.resolver = resolver;
+  }
 
-    public void setOutputFilename(String outputFilename) {
-        this.outputFilename = outputFilename;
-    }
+  public int getCompressionLevel() {
+    return CompressionLevel;
+  }
 
-    public static void setResolver(ContentResolver resolver) {
-        Rom.resolver = resolver;
-    }
+  public void setCompressionLevel(int compressionLevel) {
+    CompressionLevel = compressionLevel;
+  }
 
-    public int getCompressionLevel() {
-        return CompressionLevel;
-    }
+  public boolean isDelete() {
+    return delete;
+  }
 
-    public void setCompressionLevel(int compressionLevel) {
-        CompressionLevel = compressionLevel;
-    }
+  public void setDelete(boolean delete) {
+    this.delete = delete;
+  }
 
-    public boolean isDelete() {
-        return delete;
-    }
+  public static String getOutputFileExtension() {
+    return outputFileExtension;
+  }
 
-    public void setDelete(boolean delete) {
-        this.delete = delete;
-    }
+  public static void setOutputFileExtension(String outputFileExtension) {
+    Rom.outputFileExtension = outputFileExtension;
+  }
 
-    public static String getOutputFileExtension() {
-        return outputFileExtension;
-    }
+  public static String getInputMimeType() {
+    return inputMimeType;
+  }
 
-    public static void setOutputFileExtension(String outputFileExtension) {
-        Rom.outputFileExtension = outputFileExtension;
-    }
+  public static void setInputMimeType(String inputMimeType) {
+    Rom.inputMimeType = inputMimeType;
+  }
 
-    public static String getInputMimeType() {
-        return inputMimeType;
-    }
+  public static String getInputFileExtension() {
+    return inputFileExtension;
+  }
 
-    public static void setInputMimeType(String inputMimeType) {
-        Rom.inputMimeType = inputMimeType;
-    }
+  public static void setInputFileExtension(String inputFileExtension) {
+    Rom.inputFileExtension = inputFileExtension;
+  }
 
-    public static String getInputFileExtension() {
-        return inputFileExtension;
-    }
+  public double getProgress() {
+    return progress;
+  }
 
-    public static void setInputFileExtension(String inputFileExtension) {
-        Rom.inputFileExtension = inputFileExtension;
-    }
+  public int getIntProgress() {
+    return (int) progress;
+  }
 
-    public double getProgress() {
-        return progress;
-    }
+  public void setProgress(double progress) {
+    this.progress = progress;
+  }
 
-    public int getIntProgress() {
-        return (int) progress;
-    }
+  public static void setRomsFolder(DocumentFile romsFolder) {
+    Rom.romsFolder = romsFolder;
+  }
 
-    public void setProgress(double progress) {
-        this.progress = progress;
-    }
+  public static void setOutputMimeType(String outputMimeType) {
+    Rom.outputMimeType = outputMimeType;
+  }
 
-    public static void setRomsFolder(DocumentFile romsFolder) {
-        Rom.romsFolder = romsFolder;
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    public static void setOutputMimeType(String outputMimeType) {
-        Rom.outputMimeType = outputMimeType;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+  public void setStatus(String status) {
+    this.status = status;
+  }
 }
